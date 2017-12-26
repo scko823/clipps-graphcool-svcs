@@ -2,7 +2,7 @@ import { fromEvent } from 'graphcool-lib';
 import * as bcrypt from 'bcryptjs';
 
 async function getUserByEmail(api, email) {
-    const query = `
+  const query = `
     query getUserByEmail($email: String!) {
       User(email: $email) {
         id
@@ -11,42 +11,42 @@ async function getUserByEmail(api, email) {
     }
   `;
 
-    const variables = {
-        email
-    };
+  const variables = {
+    email,
+  };
 
-    return api.request(query, variables);
+  return api.request(query, variables);
 }
 
-export default async event => {
-    console.log(event);
+export default async (event) => {
+  console.log(event);
 
-    try {
-        const graphcool = fromEvent(event);
-        const api = graphcool.api('simple/v1');
+  try {
+    const graphcool = fromEvent(event);
+    const api = graphcool.api('simple/v1');
 
-        const { email, password: passwordAttempt } = event.data;
+    const { email, password: passwordAttempt } = event.data;
 
-        // get user by email
-        const user = await getUserByEmail(api, email).then(r => r.User);
+    // get user by email
+    const user = await getUserByEmail(api, email).then(r => r.User);
 
-        // no user with this email
-        if (!user) {
-            return { error: 'Invalid credentials!' };
-        }
-
-        // check password
-        const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
-        if (!passwordIsCorrect) {
-            return { error: 'Invalid credentials!' };
-        }
-
-        // generate node token for existing User node
-        const token = await graphcool.generateNodeToken(user.id, 'User');
-
-        return { data: { id: user.id, token } };
-    } catch (e) {
-        console.log(e);
-        return { error: 'An unexpected error occured during authentication.' };
+    // no user with this email
+    if (!user) {
+      return { error: 'Invalid credentials!' };
     }
+
+    // check password
+    const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
+    if (!passwordIsCorrect) {
+      return { error: 'Invalid credentials!' };
+    }
+
+    // generate node token for existing User node
+    const token = await graphcool.generateNodeToken(user.id, 'User');
+
+    return { data: { id: user.id, token } };
+  } catch (e) {
+    console.log(e);
+    return { error: 'An unexpected error occured during authentication.' };
+  }
 };
