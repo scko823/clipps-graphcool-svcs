@@ -1,0 +1,8 @@
+type ValidateEmailPayload {
+    id: ID!
+    validated: Boolean!
+}
+
+extend type Mutation {
+    validateEmail(email: String!, validationSecret: String!): ValidateEmailPayload
+}
