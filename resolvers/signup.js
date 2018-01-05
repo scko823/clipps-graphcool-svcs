@@ -10,6 +10,7 @@ async function getUser(api, email) {
     query getUser($email: String!) {
       User(email: $email) {
         id
+        validated
       }
     }
   `;
@@ -56,11 +57,15 @@ export default async (event) => {
       };
     }
 
+    const user = await getUser(api, email).then(r => r.User);
     // check if user exists already
-    const userExists = await getUser(api, email).then(r => r.User !== null);
+    const userExists = user !== null;
     if (userExists) {
+      if (user.validated) {
+        return { error: 'Email already in use and validated' };
+      }
       return {
-        error: 'Email already in use',
+        error: 'Email already registered, need email validation',
       };
     }
 
