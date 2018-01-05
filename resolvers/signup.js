@@ -65,7 +65,7 @@ export default async (event) => {
         return { error: 'Email already in use and validated' };
       }
       return {
-        error: 'Email already registered, need to email validation',
+        error: 'Email already registered, need email validation',
       };
     }
 
