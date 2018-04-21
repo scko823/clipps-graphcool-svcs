@@ -19,8 +19,6 @@ async function getUserByEmail(api, email) {
 }
 
 export default async (event) => {
-  console.log(event);
-
   try {
     const graphcool = fromEvent(event);
     const api = graphcool.api('simple/v1');
@@ -46,7 +44,6 @@ export default async (event) => {
 
     return { data: { id: user.id, token } };
   } catch (e) {
-    console.log(e);
     return { error: 'An unexpected error occured during authentication.' };
   }
 };

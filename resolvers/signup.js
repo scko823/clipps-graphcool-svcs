@@ -76,9 +76,6 @@ export default async (event) => {
     // create new user
     const userId = await createGraphcoolUser(api, email, hash);
 
-    // generate node token for new User node
-    // const token = await graphcool.generateNodeToken(userId, 'User');
-
     return {
       data: {
         id: userId,

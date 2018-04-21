@@ -44,11 +44,11 @@ functions:
     handler:
       code: ./resolvers/validateEmail.js
 
-  # authenticate:
-  #   type: resolver
-  #   schema: ./resolvers/authenticate.graphql
-  #   handler:
-  #     code: ./resolvers/authenticate.js
+  authenticate:
+    type: resolver
+    schema: ./resolvers/authenticate.graphql
+    handler:
+      code: ./resolvers/authenticate.js
 # 
 #   loggedInUser:
 #     type: resolver
