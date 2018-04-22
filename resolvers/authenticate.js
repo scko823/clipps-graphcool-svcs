@@ -7,6 +7,7 @@ async function getUserByEmail(api, email) {
       User(email: $email) {
         id
         password
+        validated
       }
     }
   `;
@@ -19,8 +20,6 @@ async function getUserByEmail(api, email) {
 }
 
 export default async (event) => {
-  console.log(event);
-
   try {
     const graphcool = fromEvent(event);
     const api = graphcool.api('simple/v1');
@@ -35,6 +34,10 @@ export default async (event) => {
       return { error: 'Invalid credentials!' };
     }
 
+    if (!user.validated) {
+      return { error: 'Email must be validated prior to login' };
+    }
+
     // check password
     const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
     if (!passwordIsCorrect) {
@@ -46,7 +49,6 @@ export default async (event) => {
 
     return { data: { id: user.id, token } };
   } catch (e) {
-    console.log(e);
     return { error: 'An unexpected error occured during authentication.' };
   }
 };

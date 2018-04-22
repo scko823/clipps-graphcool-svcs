@@ -7,7 +7,6 @@ async function getUser(api, email) {
       User(email: $email) {
         id,
         email,
-        id,
         validated,
         validationSecret
       }
