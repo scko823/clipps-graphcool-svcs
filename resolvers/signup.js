@@ -22,10 +22,12 @@ async function getUser(api, email) {
   return api.request(query, variables);
 }
 
-async function createGraphcoolUser(api, email, password) {
+async function createGraphcoolUser(api, firstName, lastName, email, password) {
   const mutation = `
-    mutation createGraphcoolUser($email: String!, $password: String!, $validationSecret: String!) {
+    mutation createGraphcoolUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $validationSecret: String!) {
       createUser(
+        firstName: $firstName,
+        lastName: $lastName,
         email: $email,
         password: $password,
         validationSecret: $validationSecret
@@ -36,6 +38,8 @@ async function createGraphcoolUser(api, email, password) {
   `;
 
   const variables = {
+    firstName,
+    lastName,
     email,
     password,
     validationSecret: uuidv4(),
@@ -49,7 +53,9 @@ export default async (event) => {
     const graphcool = fromEvent(event);
     const api = graphcool.api('simple/v1');
 
-    const { email, password } = event.data;
+    const {
+      email, password, firstName, lastName,
+    } = event.data;
 
     if (!validator.isEmail(email)) {
       return {
@@ -74,7 +80,7 @@ export default async (event) => {
     const hash = await bcrypt.hash(password, salt);
 
     // create new user
-    const userId = await createGraphcoolUser(api, email, hash);
+    const userId = await createGraphcoolUser(api, firstName, lastName, email, hash);
 
     return {
       data: {
