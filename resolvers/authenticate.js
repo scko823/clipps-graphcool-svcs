@@ -7,6 +7,8 @@ async function getUserByEmail(api, email) {
       User(email: $email) {
         id
         password
+        firstName
+        lastName
         validated
       }
     }
@@ -47,7 +49,14 @@ export default async (event) => {
     // generate node token for existing User node
     const token = await graphcool.generateNodeToken(user.id, 'User');
 
-    return { data: { id: user.id, token } };
+    return {
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        id: user.id,
+        token,
+      },
+    };
   } catch (e) {
     return { error: 'An unexpected error occured during authentication.' };
   }
