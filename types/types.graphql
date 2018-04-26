@@ -19,7 +19,7 @@ type User @model {
 	firstName: String!
 	lastName: String!
 	password: String!
-	# clips: [Clips]! @relation(name: "ClipOwner")
+	clips: [Clip!]! @relation(name: "ClipOwner")
 	validated: Boolean! @defaultValue(value: false)
 	validationSecret: String! @isUnique @defaultValue(value: "")
 }
@@ -38,6 +38,6 @@ type Clip @model {
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	content: String!
-	# owner: User @relation(name: "ClipOwner")
+	owner: User @relation(name: "ClipOwner")
 	clipboard: Clipboard! @relation(name: "ClipboardClips")
 }
