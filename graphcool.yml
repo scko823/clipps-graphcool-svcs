@@ -69,7 +69,17 @@ functions:
 # Read more here:
 # https://www.graph.cool/docs/reference/auth/authorization/overview-iegoo0heez
 permissions:
-  - operation: "*"
+  - operation: User.create
+  - operation: User.read
+  - operation: Clip.read
+  - operation: Clipboard.read
+  - operation: Clip.create
+    authenticated: true
+  - operation: ClipOwner.connect
+    authenticated: true
+  - operation: ClipboardClips.connect
+    authenticated: true
+  # - operation: "*"
 
 
 # Your root tokens used for functions to get full access to the API
