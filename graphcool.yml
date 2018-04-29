@@ -62,7 +62,7 @@ permissions:
   - operation: User.create
   - operation: User.read
   - operation: User.update
-	authenticated: true
+    authenticated: true
   - operation: Clip.read
   - operation: Clipboard.read
   - operation: Clip.create
