@@ -1,4 +1,4 @@
-async function getUserByEmail(api, email) {
+export default function getUserByEmail(api, email) {
 	const query = `
     query getUserByEmail($email: String!) {
       User(email: $email) {
@@ -17,5 +17,3 @@ async function getUserByEmail(api, email) {
 
 	return api.request(query, variables);
 }
-
-export default { getUserByEmail };
