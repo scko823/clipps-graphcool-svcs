@@ -1,63 +1,45 @@
 import { fromEvent } from 'graphcool-lib';
 import * as bcrypt from 'bcryptjs';
-import { getUserByEmail } from '../utils/user';
-// async function getUserByEmail(api, email) {
-//   const query = `
-//     query getUserByEmail($email: String!) {
-//       User(email: $email) {
-//         id
-//         password
-//         firstName
-//         lastName
-//         validated
-//       }
-//     }
-//   `;
+import getUserByEmail from '../utils/user';
 
-//   const variables = {
-//     email,
-//   };
+export default async event => {
+	try {
+		const graphcool = fromEvent(event);
+		const api = graphcool.api('simple/v1');
 
-//   return api.request(query, variables);
-// }
+		const { email, password: passwordAttempt } = event.data;
 
-export default async (event) => {
-  try {
-    const graphcool = fromEvent(event);
-    const api = graphcool.api('simple/v1');
+		// get user by email
+		const user = await getUserByEmail(api, email).then(r => r.User);
 
-    const { email, password: passwordAttempt } = event.data;
+		// no user with this email
+		if (!user) {
+			return { error: 'Invalid credentials!' };
+		}
 
-    // get user by email
-    const user = await getUserByEmail(api, email).then(r => r.User);
+		if (!user.validated) {
+			return { error: 'Email must be validated prior to login' };
+		}
 
-    // no user with this email
-    if (!user) {
-      return { error: 'Invalid credentials!' };
-    }
+		// check password
+		const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
+		if (!passwordIsCorrect) {
+			return { error: 'Invalid credentials!' };
+		}
 
-    if (!user.validated) {
-      return { error: 'Email must be validated prior to login' };
-    }
+		// generate node token for existing User node
+		const token = await graphcool.generateNodeToken(user.id, 'User');
 
-    // check password
-    const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
-    if (!passwordIsCorrect) {
-      return { error: 'Invalid credentials!' };
-    }
-
-    // generate node token for existing User node
-    const token = await graphcool.generateNodeToken(user.id, 'User');
-
-    return {
-      data: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        id: user.id,
-        token,
-      },
-    };
-  } catch (e) {
-    return { error: 'An unexpected error occured during authentication.' };
-  }
+		return {
+			data: {
+				firstName: user.firstName,
+				lastName: user.lastName,
+				id: user.id,
+				token
+			}
+		};
+	} catch (e) {
+		console.error(e); // eslint-disable-line no-console
+		return { error: 'An unexpected error occured during authentication.' };
+	}
 };

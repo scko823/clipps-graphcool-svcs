@@ -47,7 +47,7 @@ functions:
     handler:
       code: ./resolvers/authenticate.js
 
-  resetPassword:
+  requestPasswordReset:
     type: resolver
     schema: ./resolvers/requestPasswordReset.graphql
     handler:
@@ -56,6 +56,13 @@ functions:
         environment:
           MAILGUN_DOMAIN: mg.scko823.host
           MAILGUN_API_KEY: ${env:MAILGUN_API_KEY}
+
+  resetAndUpdatePassword:
+    type: resolver
+    schema: ./resolvers/resetPassword.graphql
+    handler:
+      code: ./resolvers/resetPassword.js
+
 
 # Model/Relation permissions are used to limit the API access
 # To take the burden of thinking about those while development, we
@@ -66,7 +73,7 @@ permissions:
   - operation: User.create
   - operation: User.read
   - operation: User.update
-    authenticated: true
+    # authenticated: true
   - operation: Clip.read
   - operation: Clipboard.read
   - operation: Clip.create
