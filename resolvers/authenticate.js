@@ -1,63 +1,45 @@
 import { fromEvent } from 'graphcool-lib';
 import * as bcrypt from 'bcryptjs';
+import getUserByEmail from '../utils/user';
 
-async function getUserByEmail(api, email) {
-  const query = `
-    query getUserByEmail($email: String!) {
-      User(email: $email) {
-        id
-        password
-        firstName
-        lastName
-        validated
-      }
-    }
-  `;
+export default async event => {
+	try {
+		const graphcool = fromEvent(event);
+		const api = graphcool.api('simple/v1');
 
-  const variables = {
-    email,
-  };
+		const { email, password: passwordAttempt } = event.data;
 
-  return api.request(query, variables);
-}
+		// get user by email
+		const user = await getUserByEmail(api, email).then(r => r.User);
 
-export default async (event) => {
-  try {
-    const graphcool = fromEvent(event);
-    const api = graphcool.api('simple/v1');
+		// no user with this email
+		if (!user) {
+			return { error: 'Invalid credentials!' };
+		}
 
-    const { email, password: passwordAttempt } = event.data;
+		if (!user.validated) {
+			return { error: 'Email must be validated prior to login' };
+		}
 
-    // get user by email
-    const user = await getUserByEmail(api, email).then(r => r.User);
+		// check password
+		const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
+		if (!passwordIsCorrect) {
+			return { error: 'Invalid credentials!' };
+		}
 
-    // no user with this email
-    if (!user) {
-      return { error: 'Invalid credentials!' };
-    }
+		// generate node token for existing User node
+		const token = await graphcool.generateNodeToken(user.id, 'User');
 
-    if (!user.validated) {
-      return { error: 'Email must be validated prior to login' };
-    }
-
-    // check password
-    const passwordIsCorrect = await bcrypt.compare(passwordAttempt, user.password);
-    if (!passwordIsCorrect) {
-      return { error: 'Invalid credentials!' };
-    }
-
-    // generate node token for existing User node
-    const token = await graphcool.generateNodeToken(user.id, 'User');
-
-    return {
-      data: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        id: user.id,
-        token,
-      },
-    };
-  } catch (e) {
-    return { error: 'An unexpected error occured during authentication.' };
-  }
+		return {
+			data: {
+				firstName: user.firstName,
+				lastName: user.lastName,
+				id: user.id,
+				token
+			}
+		};
+	} catch (e) {
+		console.error(e); // eslint-disable-line no-console
+		return { error: 'An unexpected error occured during authentication.' };
+	}
 };
