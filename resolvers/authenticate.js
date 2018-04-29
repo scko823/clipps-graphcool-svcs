@@ -1,25 +1,25 @@
 import { fromEvent } from 'graphcool-lib';
 import * as bcrypt from 'bcryptjs';
+import { getUserByEmail } from '../utils/user';
+// async function getUserByEmail(api, email) {
+//   const query = `
+//     query getUserByEmail($email: String!) {
+//       User(email: $email) {
+//         id
+//         password
+//         firstName
+//         lastName
+//         validated
+//       }
+//     }
+//   `;
 
-async function getUserByEmail(api, email) {
-  const query = `
-    query getUserByEmail($email: String!) {
-      User(email: $email) {
-        id
-        password
-        firstName
-        lastName
-        validated
-      }
-    }
-  `;
+//   const variables = {
+//     email,
+//   };
 
-  const variables = {
-    email,
-  };
-
-  return api.request(query, variables);
-}
+//   return api.request(query, variables);
+// }
 
 export default async (event) => {
   try {
