@@ -51,7 +51,11 @@ functions:
     type: resolver
     schema: ./resolvers/requestPasswordReset.graphql
     handler:
-      code: ./resolvers/requestPasswordReset.js
+      code:
+        src: ./resolvers/requestPasswordReset.js
+        environment:
+          MAILGUN_DOMAIN: mg.scko823.host
+          MAILGUN_API_KEY: ${env:MAILGUN_API_KEY}
 
 # Model/Relation permissions are used to limit the API access
 # To take the burden of thinking about those while development, we

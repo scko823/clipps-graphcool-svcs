@@ -1,8 +1,11 @@
 import { fromEvent } from 'graphcool-lib';
 import { v4 as uuidv4 } from 'uuid';
 import * as validator from 'validator';
-
 import getUserByEmail from '../utils/user';
+
+const fetch = require('isomorphic-fetch');
+
+const FormData = require('form-data');
 
 async function setUserPWResetSecret(api, pwResetSecret, id) {
 	const mutation = `
@@ -43,6 +46,46 @@ export default async event => {
 	if (!updateUser.email || !validator.isEmail(updateUser.email)) {
 		return { error: 'Unable to process password reset request' };
 	}
+
+	// ==== send email
+	const token = Buffer.from(`api:${process.env.MAILGUN_API_KEY}`, 'utf-8').toString('base64');
+	const endpoint = `https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`;
+
+	const emailFrom = `Password Rest for Clipps <no-reply@${process.env.MAILGUN_DOMAIN}>`;
+	const emailTo = updateUser.email;
+	const emailSubject = 'Password Reset for Clipps';
+	const generateHtml = (userEmail, secret) => `
+<p>Hi ${userEmail},</p>
+
+<p>We had recieved your request to reset your password on Clipps. When prompted, please provide the following secret:</p>
+
+<p>${secret}</p>
+
+<p>Thanks,</p>
+<p>Clipps</p>
+`;
+
+	// build form for MailGun
+	const form = new FormData();
+	form.append('from', emailFrom);
+	form.append('to', emailTo);
+	form.append('subject', emailSubject);
+	form.append('html', generateHtml(email, pwResetSecret));
+
+	await fetch(endpoint, {
+		headers: {
+			Authorization: `Basic ${token}`
+		},
+		method: 'POST',
+		body: form
+	})
+		.then(response => response.json())
+		.then(r => console.log(JSON.stringify(r)))
+		.catch(err => {
+			console.log('mail gun fail');
+			console.err(err);
+		});
+	// ===
 	return {
 		data: {
 			email: updateUser.email
