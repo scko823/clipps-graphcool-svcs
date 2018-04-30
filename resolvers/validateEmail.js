@@ -72,6 +72,7 @@ export default async event => {
 		}
 		return validationFailError;
 	} catch (e) {
+		console.error(e);
 		return {
 			error: 'An unexpected error occured during validate email.'
 		};

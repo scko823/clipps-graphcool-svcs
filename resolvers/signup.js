@@ -24,13 +24,14 @@ async function getUser(api, email) {
 
 async function createGraphcoolUser(api, firstName, lastName, email, password) {
 	const mutation = `
-    mutation createGraphcoolUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $validationSecret: String!) {
+    mutation createGraphcoolUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $validationSecret: String!, $pwResetSecret: String!) {
       createUser(
         firstName: $firstName,
         lastName: $lastName,
         email: $email,
         password: $password,
-        validationSecret: $validationSecret
+        validationSecret: $validationSecret,
+        pwResetSecret: $pwResetSecret
       ) {
         id
       }
@@ -42,7 +43,8 @@ async function createGraphcoolUser(api, firstName, lastName, email, password) {
 		lastName,
 		email,
 		password,
-		validationSecret: uuidv4()
+		validationSecret: uuidv4(),
+		pwResetSecret: uuidv4()
 	};
 
 	return api.request(mutation, variables).then(r => r.createUser.id);
