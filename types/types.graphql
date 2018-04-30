@@ -22,7 +22,7 @@ type User @model {
 	clips: [Clip!]! @relation(name: "ClipOwner")
 	validated: Boolean! @defaultValue(value: false)
 	validationSecret: String! @isUnique @defaultValue(value: "")
-	pwRestSecret: String! @isUnique @defaultValue(value: "")
+	pwResetSecret: String! @isUnique @defaultValue(value: "")
 }
 
 type Clipboard @model {

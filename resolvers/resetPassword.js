@@ -3,10 +3,10 @@ import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
 const SALT_ROUNDS = 10;
-async function getUserByPwRestSecret(api, pwResetSecret) {
+async function getUserByPwResetSecret(api, pwResetSecret) {
 	const query = `
-        query getUserByPwRestSecret($pwResetSecret: String!){
-			User(pwRestSecret: $pwResetSecret) {
+        query getUserByPwResetSecret($pwResetSecret: String!){
+			User(pwResetSecret: $pwResetSecret) {
 				id
 				validated
 			}
@@ -16,15 +16,15 @@ async function getUserByPwRestSecret(api, pwResetSecret) {
 	return api.request(query, variables);
 }
 
-async function updatePassword(api, id, passwordHash, pwRestSecret) {
+async function updatePassword(api, id, passwordHash, pwResetSecret) {
 	const mutation = `
-        mutation updatePassword($id: ID!, $passwordHash: String!, $pwRestSecret: String!){
-			updateUser(id: $id, password: $passwordHash, pwRestSecret: $pwRestSecret) {
+        mutation updatePassword($id: ID!, $passwordHash: String!, $pwResetSecret: String!){
+			updateUser(id: $id, password: $passwordHash, pwResetSecret: $pwResetSecret) {
 				id
 			}
         }
     `;
-	const variables = { id, passwordHash, pwRestSecret };
+	const variables = { id, passwordHash, pwResetSecret };
 	return api.request(mutation, variables);
 }
 
@@ -32,10 +32,10 @@ export default async event => {
 	const graphcool = fromEvent(event);
 	const api = graphcool.api('simple/v1');
 
-	const { pwRestSecret, password } = event.data;
+	const { pwResetSecret, password } = event.data;
 
 	// get user by email
-	const user = await getUserByPwRestSecret(api, pwRestSecret).then(r => r.User);
+	const user = await getUserByPwResetSecret(api, pwResetSecret).then(r => r.User);
 
 	// no user with this email
 	if (!user) {

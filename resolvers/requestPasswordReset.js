@@ -10,7 +10,7 @@ const FormData = require('form-data');
 async function setUserPWResetSecret(api, pwResetSecret, id) {
 	const mutation = `
         mutation setPasswordResetSecret($pwResetSecret: String!, $id: ID!){
-			updateUser(id: $id, pwRestSecret: $pwResetSecret) {
+			updateUser(id: $id, pwResetSecret: $pwResetSecret) {
 				id
 				email
 			}
@@ -83,7 +83,7 @@ export default async event => {
 		.then(r => console.log(JSON.stringify(r)))
 		.catch(err => {
 			console.log('mail gun fail');
-			console.err(err);
+			console.error(err);
 		});
 	// ===
 	return {
