@@ -75,8 +75,9 @@ permissions:
   - operation: User.update
     # authenticated: true
   - operation: Clip.read
-  - operation: Clipboard.read
   - operation: Clip.create
+    authenticated: true
+  - operation: Clipboard.read
     authenticated: true
   - operation: ClipOwner.connect
     authenticated: true
