@@ -83,6 +83,14 @@ permissions:
     authenticated: true
   - operation: ClipboardClips.connect
     authenticated: true
+  - operation: Comment.read
+    authenticated: true
+  - operation: Comment.create
+    authenticated: true
+  - operation: ClipComments.connect
+    authenticated: true
+  - operation: CommentAuthor.connect
+    # authenticated: true
   # - operation: "*"
 
 
