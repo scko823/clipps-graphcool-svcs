@@ -88,7 +88,7 @@ permissions:
   - operation: Comment.create
     authenticated: true
   - operation: ClipComments.connect
-    # authenticated: true
+    authenticated: true
   - operation: CommentAuthor.connect
     # authenticated: true
   # - operation: "*"
