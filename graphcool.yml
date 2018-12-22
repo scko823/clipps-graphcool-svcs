@@ -13,10 +13,8 @@
 #
 # Happy Coding!
 
-
 # In the types.graphql you define your data schema
 types: ./types/types.graphql
-
 
 functions:
   signup:
@@ -32,7 +30,7 @@ functions:
       code:
         src: ./resolvers/sendValidationEmail.js
         environment:
-          MAILGUN_DOMAIN: mg.scko823.host
+          MAILGUN_DOMAIN: mg.scko823.win
           MAILGUN_API_KEY: ${env:MAILGUN_API_KEY}
 
   validateEmail:
@@ -54,7 +52,7 @@ functions:
       code:
         src: ./resolvers/requestPasswordReset.js
         environment:
-          MAILGUN_DOMAIN: mg.scko823.host
+          MAILGUN_DOMAIN: mg.scko823.win
           MAILGUN_API_KEY: ${env:MAILGUN_API_KEY}
 
   resetAndUpdatePassword:
@@ -62,7 +60,6 @@ functions:
     schema: ./resolvers/resetPassword.graphql
     handler:
       code: ./resolvers/resetPassword.js
-
 
 # Model/Relation permissions are used to limit the API access
 # To take the burden of thinking about those while development, we
@@ -92,8 +89,6 @@ permissions:
   - operation: CommentAuthor.connect
     # authenticated: true
   # - operation: "*"
-
-
 # Your root tokens used for functions to get full access to the API
 # Read more here:
 # https://www.graph.cool/docs/reference/auth/authentication/authentication-tokens-eip7ahqu5o
